@@ -1,0 +1,91 @@
+#---------------
+# PREAMBLE
+#---------------
+outdata_prefix "./outdata/"
+#
+################################################################################
+# Primitive bcc Niobium (Z=41), single-atom cell (no basis)
+# Convergence sweeps:
+#   - DATASET  1.. 9 : Etot vs ecut   (fixed ngkpt = 12x12x12)
+#   - DATASET 10..14 : Etot vs ngkpt  (fixed ecut  = 50 Ha)
+################################################################################
+
+# --------------------
+# Lattice: primitive bcc (1 atom)
+# --------------------
+# Use cubic lattice parameter a ≈ 3.300 Å → a_bohr = 3.300 * 1.889726125 ≈ 6.2360 Bohr
+# Primitive vectors (rows of rprim, unitless) in units of acell:
+#   a1 = a * (-1,  1,  1)/2
+#   a2 = a * ( 1, -1,  1)/2
+#   a3 = a * ( 1,  1, -1)/2
+acell  6.2360  6.2360  6.2360     
+rprim
+ -0.5  0.5  0.5
+  0.5 -0.5  0.5
+  0.5  0.5 -0.5
+
+# --------------------
+# Species & atoms (single-atom primitive cell)
+# --------------------
+ntypat 1
+znucl  41                         # Nb
+natom  1
+typat  1
+xred
+  0.0  0.0  0.0                   # single atom at the lattice point
+
+# --------------------
+# Pseudopotential
+# --------------------
+pp_dirpath "./"
+pseudos    "Nb.psp8"
+
+# --------------------
+# Global defaults (overridden by per-dataset lines below)
+# --------------------
+# Plane waves (used by k-mesh sweep datasets 10..14)
+ecut    33
+
+# K-point sampling (used by ecut sweep datasets 1..9)
+kptopt  1
+ngkpt   8 8 8
+nshiftk 1
+shiftk  0.5 0.5 0.5
+
+# Metallic occupations
+occopt  4                          # cold smearing (Marzari–Vanderbilt)
+tsmear  0.01                       # Ha (~0.27 eV). After converging ecut/k, you can reduce it.
+
+# SCF controls
+nstep   80
+toldfe  1.0d-6
+diemac  1e6
+
+# ------------------------------------------------------------------------------
+# MULTI-DATASET DEFINITION
+#   14 datasets total:
+#   - 1..9   : ecut sweep at fixed ngkpt
+#   - 10..14 : ngkpt sweep at fixed ecut
+# ------------------------------------------------------------------------------
+ndtset 14
+
+# ---- ecut sweep (datasets 1..9) ----
+ecut1  21
+ecut2  24
+ecut3  27
+ecut4  30
+ecut5  33
+ecut6  36
+ecut7  39
+ecut8  42
+ecut9  45
+
+# ---- k-mesh sweep (datasets 10..14) ----
+# Keep global ecut=50 Ha, vary ngkpt:
+ngkpt10   2  2  2
+ngkpt11   4  4  4
+ngkpt12   6  6  6
+ngkpt13   8  8  8
+ngkpt14  10 10 10
+
+
