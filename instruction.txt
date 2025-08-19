@@ -1,0 +1,15 @@
+# DFT - Steps, general results and analysis
+
+## Following and summarizing "ABINIT Hands-On" by Matteo Cagnoni:
+- Find convergence with respect to cut-off energy (using multi-dataset mode) for a certain grid of k-points
+- Find convergence with respect to number of k-points (using multi-dataset mode) for the "optimized" cut-off energy
+- Find convergence with respect to the smearing parameter
+N.B. In principle these three convergences are not independent but...
+- Perform structural relaxation
+## Band structure
+- Comparison with results from literature
+- Calculation of the Fermi velocity in any point where a band crossed the Fermi energy
+- Calculation of the effective mass in any point where a band crossed the Fermi energy, fit by a quadratic behaviour a small regione around the Fermi energy of the band, then you can obtain the effective mass in that k point
+- The total average value of v_F and m^* on the Fermi surface, that can be used in other analyses on experimental values can be obtained in first approximation by a simple avergae of the different values found in the different k_F points
+- Density of states, comparison with literature, density of states at Fermi energy, Density of charge carriers n is very important for calculations and analysis of the transport properties
+- Phonon properties, disperion relation comparing with literature, speed of sound in directions of high symmetry by a linear fit of the acousting branches at energies close to zero, the energy values of optical branches at q=0 can give info on the energies of Raman peaks but attention not all the modes are Raman active

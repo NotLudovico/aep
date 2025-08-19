@@ -1,0 +1,81 @@
+#############################################
+# Nb (bcc, primitive cell, 1 atom) – Volume relaxation
+# Goal: relax the lattice parameter (optcell=1) at 0 GPa.
+# Quick but safe defaults for a transition-metal metal (Nb).
+#############################################
+
+# ===========
+# PREAMBLE
+# ===========
+outdata_prefix "./outdata/"   # Where ABINIT will write text/data files
+
+# ===========
+# LATTICE: primitive bcc (1 atom)
+# ===========
+# Conventional cubic 'a' ~ 3.30 Å  →  a_bohr = 3.30 * 1.889726125 ≈ 6.236 Bohr
+# rprim rows are unitless, scaled by acell (Bohr). This is the standard bcc primitive:
+#   a1 = a * (-1,  1,  1)/2
+#   a2 = a * ( 1, -1,  1)/2
+#   a3 = a * ( 1,  1, -1)/2
+acell  6.2360  6.2360  6.2360
+rprim
+ -0.5  0.5  0.5
+  0.5 -0.5  0.5
+  0.5  0.5 -0.5
+
+# ===========
+# SPECIES & ATOMS
+# ===========
+ntypat 1
+znucl  41                 # Nb
+natom  1
+typat  1
+xred
+ 0.0  0.0  0.0            # lattice point (bcc primitive has one atom)
+
+# ===========
+# PSEUDOPOTENTIAL
+# ===========
+# Use a PBE PAW/ONCV psp8 with semicore (recommended for Nb).
+pp_dirpath "../"
+pseudos "Nb.psp8"
+
+# ===========
+# ELECTRONS / BASIS / k-POINTS
+# ===========
+ecut   33.0               # [Ha] start with 50 Ha (metals + semicore). Converge later.
+kptopt 1                  # Symmetry-adapted IBZ sampling
+ngkpt  8 8 8           # Denser mesh for a metal; converge later (12–24^3 typical)
+nshiftk 1
+shiftk  0.5 0.5 0.5       # Half-shifted Monkhorst–Pack commonly used for bcc metals
+
+# Smearing (metal)
+occopt 4                  # Cold smearing (Marzari)
+tsmear 0.01              # [Ha] ≈ 0.41 eV. Check 0.01 and 0.02 in a separate test.
+
+# ===========
+# RELAXATION (CELL + (trivial) ATOMS)
+# ===========
+optcell 1                 # 1: relax volume only (keeps shape fixed, ideal for cubic)
+ionmov  2                 # BFGS for atomic positions (no internal DoF here; harmless)
+ntime   20                # Max geometry steps (volume updates)
+dilatmx 1.05              # Max relative cell expansion per step (book memory safely)
+ecutsm  0.5               # [Ha] Pulay-stress smoother for variable-cell runs
+
+# Geometry stopping criteria
+# For optcell=1, ABINIT uses stress + forces. Set a force-like threshold:
+tolmxf 5.0d-5             # [Ha/Bohr] ~ 0.0025 eV/Å (tight but reasonable)
+strtarget 0.0 0.0 0.0 0.0 0.0 0.0   # Target stress tensor (0 GPa) – default, but explicit
+
+# ===========
+# SCF PROCEDURE
+# ===========
+iscf   7                  # Robust SCF algorithm (RMM-DIIS)
+nstep  80                 # Max SCF iterations per geometry step (metals may need more)
+toldfe 1.0d-8             # Total-energy change per SCF cycle (tight for accurate stress)
+diemac 100.0              # Preconditioner. Larger for metals can help; tune if needed.
+
+# I/O hygiene
+prtden 0
+prtpot 0
+prtwf  0

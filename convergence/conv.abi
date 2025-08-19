@@ -2,7 +2,7 @@
 # PREAMBLE
 #---------------
 outdata_prefix "./outdata/"
-#
+
 ################################################################################
 # Primitive bcc Niobium (Z=41), single-atom cell (no basis)
 # Convergence sweeps:
@@ -37,7 +37,7 @@ xred
 # --------------------
 # Pseudopotential
 # --------------------
-pp_dirpath "./"
+pp_dirpath "../"
 pseudos    "Nb.psp8"
 
 # --------------------
