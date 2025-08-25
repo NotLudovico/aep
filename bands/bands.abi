@@ -58,13 +58,12 @@ tsmear 0.001                                                                    
                                                                                 # see http://theossrv1.epfl.ch/Main/ElectronicTemperature
 
 ################################################################################
-################################################################################
 # BAND STRUCTURE
 ################################################################################
 iscf2 -2
 getden2 -1                                                                      # get density from previous step
 kptopt2 -7
-nband2 30
+nband2 16
 ndivsm2 60                                                                      # number of sub-divisions of each band structure segment
 kptbounds2  
   0      0      0          # Γ
