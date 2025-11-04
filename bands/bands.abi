@@ -37,7 +37,7 @@ ecut    33
 
 # K-point sampling (used by ecut sweep datasets 1..9)
 kptopt  1
-ngkpt   8 8 8
+ngkpt   10 10 10
 nshiftk 1
 shiftk  0.5 0.5 0.5
 
@@ -45,7 +45,6 @@ shiftk  0.5 0.5 0.5
 nstep   80
 toldfe  1.0d-6
 diemac  1e6
-
 ################################################################################
 # OCCUPATION
 ################################################################################
@@ -63,8 +62,8 @@ tsmear 0.001                                                                    
 iscf2 -2
 getden2 -1                                                                      # get density from previous step
 kptopt2 -7
-nband2 16
-ndivsm2 60                                                                      # number of sub-divisions of each band structure segment
+nband2 32
+ndivsm2 80                                                                      # number of sub-divisions of each band structure segment
 kptbounds2  
   0      0      0          # Γ
  -1/2    1/2    1/2        # H

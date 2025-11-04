@@ -1,0 +1,32 @@
+################################################################################
+# HELPER FILE TO FIND HOW MANY INEQUIVALENT Q-POINTS IN PHONON CALCULATION
+# NO ACTUAL CALCULATION IS DONE HERE
+################################################################################
+outdata_prefix "./outdata/0_qptgen/qptgen"
+
+acell 7.626 7.626 7.626
+rprim 0.0 0.5 0.5
+      0.5 0.0 0.5
+      0.5 0.5 0.0
+
+ntypat 1
+znucl 13
+pp_dirpath "../../../pseudos/pseudo-dojo_nc_sr_pbe_standard"
+pseudos "Al.psp8"
+
+natom 1
+typat 1
+xred 0.0 0.0 0.0
+
+ecut 14.0
+
+kptopt 1                                                                        # k-points setup method;
+                                                                                # 1: only k-points within irreducible BZ generated
+ngkpt 16 16 16                                                                  # set-up k-points as you would set up q-points
+nshiftk 1
+shiftk 0 0 0
+
+nstep 1                                                                         # no real calculation done,
+nline 1                                                                         # I just want to set up q points for phonon calculation
+
+tolvrs 1.0d-18

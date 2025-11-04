@@ -1,0 +1,82 @@
+################################################################################
+# PREAMBLE
+################################################################################
+outdata_prefix "./outdata/edos-fermi"                                           # path prefix for output data files
+ndtset 2                                                                        # number of datasets (one for SCF procedure to get GS electron density, one for band structure calculation)
+
+################################################################################
+# UNIT CELL
+################################################################################
+acell 10.336 10.336 10.336                                                      # [Bohr] length scales by which dimensionless primitive translations 'rprim' are multiplied (determined with cell optimization)
+rprim 0.0 0.5 0.5                                                               # dimensionless primitive translations in real space
+      0.5 0.0 0.5
+      0.5 0.5 0.0
+
+################################################################################
+# ATOM TYPES
+################################################################################
+ntypat 1                                                                        # number of atom types
+znucl 14                                                                        # atomic number of the atom types (space-separated)
+pp_dirpath "../../../pseudos/pseudo-dojo_nc_sr_pbe_standard"                    # path to directory containing pseudopotentials (must be consistent with 'znucl' order)
+pseudos "Si.psp8"                                                               # pseudopotential file names (within quotation marks, comma-separated)
+
+################################################################################
+# ATOMS
+################################################################################
+natom 2                                                                         # number of atoms in the unit cell
+typat 1 1                                                                       # atom types (must be consistent with 'znucl' and 'pseudos' order)
+xred 0   0   0                                                                  # atom fractional coordinates within unit cell
+     1/4 1/4 1/4
+
+################################################################################
+# PLANE-WAVE BASIS SET
+################################################################################
+ecut 12.0                                                                       # [Ha] cut-off energy; converge study in next "experiment" (see http://www.pseudo-dojo.org/)
+
+################################################################################
+# k-POINT GRID (see https://journals.aps.org/prb/abstract/10.1103/PhysRevB.13.5188) for SCF procedure (DATASET 1)
+################################################################################
+kptopt 1                                                                        # method to set-up k-points; 1: symmetry accounted for, so that only k-points within irreducible BZ generated, with appropriate symmetry-defined weights (degeneracy); prevents redundancy
+ngkpt1 4 4 4                                                                    # number of grid points
+nshiftk1 4                                                                      # number of shifted grids to be used concurrently with the one defined above
+shiftk1 0.5 0.5 0.5                                                             # k-grid shift vectors; this combination is very efficient for FCC lattice, while other choices might be more suitable for other lattices (see https://docs.abinit.org/variables/basic/#shiftk)
+        0.5 0.0 0.0
+        0.0 0.5 0.0
+        0.0 0.0 0.5
+
+################################################################################
+# SCF PROCEDURE (DATASET 1)
+################################################################################
+nstep1 20                                                                       # max. number of SCF cycles
+toldfe1 1.0d-6                                                                  # convergence criterion: absolute energy difference between two consecutive steps
+diemac1 12                                                                      # (optional) pre-conditioning of macroscopic dielectric constant; very large for metals; might significantly speed up computation (see https://docs.abinit.org/variables/gstate/#diemac)
+prtden1 1                                                                       # save density from SCF procedure (dataset1), so that it can be used in the non-self-consistent calculation of band structure (dataset 2)
+
+################################################################################
+# DENSITY-OF-STATES (DATASET 2)
+################################################################################
+ngkpt2 30 30 30                                                                 # number of grid points for DOS calculation (dataset 2);
+nshiftk2 1                                                                      # many more points needed to have a fine sampling of BZ;
+shiftk2 0.0 0.0 0.0
+iscf2 -3                                                                        # self-consistency of the calculation;
+                                                                                # 0: SCF cycle,
+                                                                                # -2: non-SCF calculation (we are reading the electron density from the previous SCF cycle);
+                                                                                # -3: like -2, but initialize occupation (see https://docs.abinit.org/variables/basic/#iscf)
+getden2 -1                                                                      # get density from previous step
+tolwfr2 1.0d-12                                                                 # tolerance on wavefunction squared residual
+nband2 6                                                                        # number of bands (if unsure, look at 'nband' in output file of SCF cycle and add some more)
+enunit2 1                                                                       # output energies in eV instead of Ha
+prtdos2 2                                                                       # save density-of-states; 2: use the tetrahedron method (see https://docs.abinit.org/variables/files/#prtdos)
+
+################################################################################
+# DOPING + EVENTUAL FERMI SURFACE (UNCOMMENT IF NEEDED) - VERY LARGE VALUES USED TO MAKE THE EFFECT VERY VISIBLE
+################################################################################
+#cellcharge2 0.75                                                              # unit cell charge in number of electrons; e.g., to treat a system missing one electron per unit cell, set se to +1 (I use -0.5 for n-doping, 0.75 for p-doping)
+#occopt2 4                                                                     # controls how occupation of electronic states is handled (see https://docs.abinit.org/variables/basic/#occopt)
+                                                                                # when occopt = 4, the "cold smearing" of Marzari is used
+                                                                                # smearing improves convergence w.r.t. to BZ sampling in metals, where state occupation drops suddenly to zero as Fermi level crossed
+                                                                                # otherwise, a very fine mesh would be needed for accurate integration around the discontinuity
+#tsmear2 0.04                                                                  # [Ha] "temperature" of smearing
+                                                                                # convergence should be checked also w.r.t. this parameter
+                                                                                # see http://theossrv1.epfl.ch/Main/ElectronicTemperature
+#prtfsurf2 1                                                                   # save data for Fermi surface plot in BXSF format (readable by XCrysDen)

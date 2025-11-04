@@ -1,0 +1,69 @@
+################################################################################
+# PREAMBLE
+################################################################################
+outdata_prefix "./outdata/etot-vs-nkpt-tsmear"                                  # path prefix for output data files
+ndtset 15                                                                       # total number of datasets, one for each ('ngkpt', 'tsmear') combination considered
+udtset 3 5                                                                      # number of 'ngkpt' and 'tsmear' values, respectively, whose Cartesian product gives the total number of datasets
+                                                                                # I consider the combinations of 3 values of 'ngkpt' and 5 values of 'tsmear', for a total of 15 datasets
+
+################################################################################
+# UNIT CELL
+################################################################################
+acell 7.60 7.60 7.60                                                            # [Bohr] length scales by which dimensionless primitive translations 'rprim' are multiplied
+rprim 0.0 0.5 0.5                                                               # dimensionless primitive translations in real space
+      0.5 0.0 0.5
+      0.5 0.5 0.0
+
+################################################################################
+# ATOM TYPES
+################################################################################
+ntypat 1                                                                        # number of atom types
+znucl 13                                                                        # atomic number of the atom types (space-separated)
+pp_dirpath "../../../pseudos/pseudo-dojo_nc_sr_pbe_standard"                    # path to directory containing pseudopotentials
+pseudos "Al.psp8"                                                               # pseudopotential file names (within quotation marks, comma-separated, must be consistent with 'znucl' order)
+
+################################################################################
+# ATOMS
+################################################################################
+natom 1                                                                         # Al has FCC structure, with one atom per unit cell
+typat 1                                                                         # atom types (must be consistent with 'znucl' and 'pseudos' order)
+xred 0.0 0.0 0.0                                                                # atom fractional coordinates within unit cell
+
+################################################################################
+# PLANE-WAVE BASIS SET
+################################################################################
+ecut 14.0                                                                       # [Ha] "optimal" value calculated in previous "experiment"
+
+################################################################################
+# k-POINT GRID (see https://journals.aps.org/prb/abstract/10.1103/PhysRevB.13.5188)
+################################################################################
+kptopt 1                                                                        # method to set-up k-points; 1: symmetry accounted for, so that only k-points within irreducible BZ generated, with appropriate symmetry-defined weights (degeneracy); prevents redundancy
+ngkpt1? 4 4 4                                                                   # number of grid points; the integer appended to 'ngkpt' identifies the dataset w.r.t. 'ngkpt' value; the '?' means that this values will be used for each ('ngkpt', 'tsmear') pair having 'ngkpt'='ngkpt1?'
+ngkpt2? 6 6 6
+ngkpt3? 8 8 8
+nshiftk 4                                                                       # number of shifted grids to be used concurrently with the one defined above
+shiftk 0.5 0.5 0.5                                                              # k-grid shift vectors; this combination is very efficient for FCC lattice, while other choices might be more suitable for other lattices (see https://docs.abinit.org/variables/basic/#shiftk)
+       0.5 0.0 0.0
+       0.0 0.5 0.0
+       0.0 0.0 0.5
+
+################################################################################
+# OCCUPATION
+################################################################################
+occopt 4                                                                        # controls how occupation of electronic states is handled (see https://docs.abinit.org/variables/basic/#occopt)
+                                                                                # when occopt = 4, the "cold smearing" of Marzari is used
+                                                                                # smearing improves convergence w.r.t. to BZ sampling in metals, where state occupation drops suddenly to zero as Fermi level crossed
+                                                                                # otherwise, a very fine mesh would be needed for accurate integration around the discontinuity
+tsmear?1 0.01                                                                   # [Ha] temperature of smearing; the integer appended to 'tsmear' identifies the dataset w.r.t. 'tsmear' value; the '?' means that this value will be used for each ('ngkpt', 'tsmear') pair having 'tsmear'='tsmear?1'
+tsmear?2 0.02
+tsmear?3 0.03
+tsmear?4 0.04
+tsmear?5 0.05
+
+################################################################################
+# SCF PROCEDURE
+################################################################################
+nstep 10                                                                        # max. number of SCF cycles
+toldfe 1.0d-6                                                                   # convergence criterion: absolute energy difference between two consecutive steps
+diemac 1e6                                                                      # (optional) pre-conditioning of macroscopic dielectric constant; very large for metals; might significantly speed up computation (see https://docs.abinit.org/variables/gstate/#diemac)
+getwfk -1                                                                       # initial wavefunction guess taken from previous dataset; this speeds up calculation significantly

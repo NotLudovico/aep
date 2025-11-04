@@ -1,0 +1,31 @@
+################################################################################
+# HELPER FILE TO GENERATE INEQUIVALENT Q-POINTS FOR THE ACTUAL CALCULATION.
+# NO ACTUAL CALCULATION IS DONE HERE
+################################################################################
+outdata_prefix "./outdata/0_qptgen/qptgen"
+
+acell 10.336 10.336 10.336
+rprim 0.0 0.5 0.5
+      0.5 0.0 0.5
+      0.5 0.5 0.0
+
+ntypat 1
+znucl 14
+pp_dirpath "../../../pseudos/pseudo-dojo_nc_sr_pbe_standard"
+pseudos "Si.psp8"
+
+natom 2
+typat 1 1
+xred 0    0    0
+     1/4 1/4 1/4
+
+ecut 12.0
+
+kptopt 1                                                                        # k-points setup method; 1: only k-points within irreducible BZ will be generated
+ngkpt 4 4 4
+nshiftk 1
+shiftk 0 0 0
+
+nstep 1                                                                         # no real calculation done, I just want to set up q points for phonon calculation
+nline 1
+tolvrs 1.0d-18

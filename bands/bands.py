@@ -5,7 +5,7 @@ from abipy.electrons.effmass_analyzer import EffMassAnalyzer
 with abiopen("outdata/ebnd_DS2_GSR.nc") as ncfile:
     ebands = ncfile.ebands
 
-print(ebands)
+print(ebands.fermie)
 ebands.plot(with_gaps=True, title="Nb band structure")
 
 

@@ -1,0 +1,51 @@
+################################################################################
+# PREAMBLE
+################################################################################
+output_file = "3_anaddb.abo"                                                    # output file
+ddb_filepath = "2_mrgddb.abo"                                                   # path to Derivative DataBase (DDB)
+gkk_filepath = "dummy1"                                                         # path to GKK matrix elements database (only for e-ph)
+eph_prefix = "dummy2"                                                           # prefix for e-ph output data (only for e-ph)
+ddk_filepath = "dummy3"                                                         # not used here, but must be written
+outdata_prefix "./outdata/3_anaddb/anaddb"                                      # output data prefix
+
+################################################################################
+# FLAGS
+################################################################################
+ifcflag 1                                                                       # calculate interatomic force constants and
+                                                                                # use them to interpolate phonon spectrum
+                                                                                # and dynamical matrices at every q-vector
+
+################################################################################
+# WAVE VECTOR (COARSE) GRID FROM CALCULATED DDB BASED ON WHICH IFCs CALCULATED
+################################################################################
+ngqpt 4 4 4                                                                     # Monkhorst-Pack grid to consider
+                                                                                # (must correspond to DDB data or a subset of it)
+nqshft 1                                                                        # number of q-shifts
+q1shft 0 0 0                                                                    # shift vectors of coarse grid
+
+################################################################################
+# BAND STRUCTURE CALCUATION BY FOURIER INTERPOLATION ON Q-VECTOR SEGMENTS
+################################################################################
+nqpath 9                                                                        # number of interpolation q-segment end-points
+ndivsm 10                                                                       # meaning of variables analogous to k-paths
+                                                                                # same segment not allowed twice (change cell)
+qpath 0.0000  0.0000  0.0000                                                    # Gamma point
+      0.3750  0.3750  0.7500                                                    # K point
+      0.5000  0.5000  1.0000                                                    # X point
+      1.0000  1.0000  1.0000                                                    # Gamma point
+      0.5000  0.5000  0.5000                                                    # L point
+      0.5000  0.0000  0.5000                                                    # X point
+      0.5000  0.2500  0.7500                                                    # W point
+      0.5000  0.5000  0.5000                                                    # L point
+      0.0000  0.0000  0.0000                                                    # Gamma point
+
+################################################################################
+# DOS CALCULATION BY FOURIER INTERPOLATION ON FINE GRID
+################################################################################
+prtdos 1                                                                        # calculate DOS?
+                                                                                # 0: no
+                                                                                # 1: by gaussian method
+                                                                                # 2: by tetrahedron method
+dossmear 2e-5                                                                   # [Ha]
+ng2qpt 30 30 30                                                                 # q-vector fine grid for DOS calculation
+q2shft 0 0 0

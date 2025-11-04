@@ -1,0 +1,88 @@
+################################################################################
+# PREAMBLE
+################################################################################
+outdata_prefix "./outdata/1_response/response"                                  # path prefix for output data files
+ndtset 9                                                                        # number of datasets:
+                                                                                # 1: initial GS SCF calculation, 2-9: response to phonons
+                                                                                # the number of irreducible q-points has been checked
+                                                                                # with previous dummy run
+
+################################################################################
+# PHONON-RELATED DEFAULT SETTINGS
+################################################################################
+qptopt 1                                                                        # q-point grid generation
+ngqpt 4 4 4                                                                     # same meanings as k-point related vars
+nshiftq 1
+shiftq 0 0 0
+nqpt 1                                                                          # read q-point (ABINIT considers one q point per dataset)
+rfphon 1                                                                        # calculate response function to q-phonon
+getwfk 1                                                                        # use wavefunction from dataset 1 (GS calculation)
+tolvrs 1.0d-8                                                                   # convergence based on residual of potential
+
+kptopt 3                                                                        # do not account for symmetry when generating k-vectors
+                                                                                # (needed for phonon calculations; overridden in dataset 1)
+
+# specify which q-point from the grid to use for each dataset,
+# by index in the list of q-points
+iqpt: 0                                                                         # start q-point: iqpt=0 => q = 0 0 0
+iqpt+ 1                                                                         # increment iqpt by 1 at each dataset
+                                                                                # iqpt=1 => q = 0 0 0
+                                                                                # at last dataset (9), iqpt=8 (max. index)
+
+################################################################################
+# DATASET 1: GROUND-STATE CALCULATION
+################################################################################
+getwfk1 0                                                                       # override taking wavefunction from previous calculation
+nqpt1 0                                                                         # do not apply phonon perturbation
+rfphon1 0                                                                       # do not apply phonon perturbation
+tolvrs1 1.0d-18                                                                 # SCF convergence criterion: residual of the potential
+                                                                                # (see https://docs.abinit.org/variables/basic/#tolvrs)
+kptopt1 1                                                                       # override set-up of k-points to take symmetry into account
+                                                                                # OK for GS, must be 3 for response calculation
+
+################################################################################
+# UNIT CELL
+################################################################################
+acell 10.336 10.336 10.336                                                      # [Bohr] length scales along x, y, z by which dimensionless primitive translations 'rprim' are multiplied
+rprim 0.0 0.5 0.5                                                               # dimensionless primitive translations
+      0.5 0.0 0.5
+      0.5 0.5 0.0
+
+################################################################################
+# ATOM TYPES
+################################################################################
+ntypat 1                                                                        # number of atom types
+znucl 14                                                                        # atomic number of the atom types
+pp_dirpath "../../../pseudos/pseudo-dojo_nc_sr_pbe_standard"                    # path to pseudopotentials directory
+pseudos "Si.psp8"                                                               # pseudopotential files
+
+################################################################################
+# ATOMS
+################################################################################
+natom 2                                                                         # number of atoms in the unit cell
+typat 1 1                                                                       # atom types (must be consistent with 'znucl' and 'pseudos' order)
+xred 0   0   0                                                                  # unit cell atoms fractional coordinates
+     1/4 1/4 1/4
+
+################################################################################
+# PLANE-WAVE BASIS SET
+################################################################################
+ecut 12.0                                                                       # [Ha] cut-off energy
+
+################################################################################
+# NUMBER OF BANDS
+################################################################################
+nband 5
+
+################################################################################
+# k-POINT GRID (see https://journals.aps.org/prb/abstract/10.1103/PhysRevB.13.5188)
+################################################################################
+ngkpt 4 4 4                                                                     # number of grid points
+nshiftk 1                                                                       # number of shifted grids to be used in addition to the one defined above
+shiftk 0.0 0.0 0.0                                                              # k-grid shift vectors;
+
+################################################################################
+# SCF PROCEDURE
+################################################################################
+nstep 50                                                                        # max. number of SCF cycles
+diemac 12.0                                                                     # (optional) pre-conditioning of macroscopic dielectric constant (see https://docs.abinit.org/variables/gstate/#diemac); might significantly speed-up computation

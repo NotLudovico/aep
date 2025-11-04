@@ -1,0 +1,87 @@
+################################################################################
+# PREAMBLE
+################################################################################
+outdata_prefix "./outdata/ebnd"                                                 # path prefix for output data files
+ndtset 2                                                                        # number of datasets
+                                                                                # 1: SCF procedure to get GS electron density
+                                                                                # 2: one for band structure calculation
+
+################################################################################
+# UNIT CELL
+################################################################################
+acell 10.336 10.336 10.336                                                      # [Bohr] length scales by which dimensionless primitive translations 'rprim' are multiplied (determined with cell optimization)
+rprim 0.0 0.5 0.5                                                               # dimensionless primitive translations in real space
+      0.5 0.0 0.5
+      0.5 0.5 0.0
+
+################################################################################
+# ATOM TYPES
+################################################################################
+ntypat 1                                                                        # number of atom types
+znucl 14                                                                        # atomic number of the atom types (space-separated)
+pp_dirpath "../../../pseudos/pseudo-dojo_nc_sr_pbe_standard"                    # path to directory containing pseudopotentials (must be consistent with 'znucl' order)
+pseudos "Si.psp8"                                                               # pseudopotential file names (within quotation marks, comma-separated)
+
+################################################################################
+# ATOMS
+################################################################################
+natom 2                                                                         # number of atoms in the unit cell
+typat 1 1                                                                       # atom types (must be consistent with 'znucl' and 'pseudos' order)
+xred 0   0   0                                                                  # atom fractional coordinates within unit cell
+     1/4 1/4 1/4
+
+################################################################################
+# PLANE-WAVE BASIS SET
+################################################################################
+ecut 12.0                                                                       # [Ha] cut-off energy; converge study in previous "experiment" (see http://www.pseudo-dojo.org/)
+
+################################################################################
+# k-POINT GRID (see https://journals.aps.org/prb/abstract/10.1103/PhysRevB.13.5188) for SCF procedure (dataset 1)
+################################################################################
+kptopt1 1                                                                       # method to set-up k-points;
+                                                                                # 1: symmetry accounted for,
+                                                                                # so that only k-points within irreducible BZ generated,
+                                                                                # with appropriate symmetry-defined weights (degeneracy);
+                                                                                # prevents redundancy
+ngkpt1 4 4 4                                                                    # number of grid points
+nshiftk1 4                                                                      # number of shifted grids to be used concurrently
+shiftk1 0.5 0.5 0.5                                                             # k-grid shift vectors;
+        0.5 0.0 0.0                                                             # this combination is very efficient for FCC lattice
+        0.0 0.5 0.0                                                             # (see https://docs.abinit.org/variables/basic/#shiftk)
+        0.0 0.0 0.5
+
+################################################################################
+# SCF PROCEDURE
+################################################################################
+nstep1 20                                                                       # max. number of SCF cycles
+toldfe1 1.0d-6                                                                  # convergence criterion:
+                                                                                # absolute energy difference between two consecutive steps
+prtden1 1                                                                       # save density from SCF procedure (dataset1),
+                                                                                # so that it can be used in the non-self-consistent
+                                                                                # calculation of band structure (dataset 2)
+diemac1 12                                                                      # (optional) pre-conditioning of macroscopic dielectric constant; very large for metals; might significantly speed up computation (see https://docs.abinit.org/variables/gstate/#diemac)
+
+################################################################################
+# BAND STRUCTURE
+################################################################################
+iscf2 -2                                                                        # self-consistency of the calculation;
+                                                                                # 0: SCF cycle (default),
+                                                                                # -2: non-SCF calculation
+getden2 -1                                                                      # get density from previous step
+kptopt2 -6                                                                      # when negative, k-points set up
+                                                                                # from bounds and number of sub-divisions
+                                                                                # of segments in BZ;
+                                                                                # absolute value equal to the number of segments
+nband2 8                                                                        # number of bands
+                                                                                # (if unsure, look at 'nband' in output file of SCF cycle
+                                                                                # and add some more to include empty states)
+ndivsm2 10                                                                      # number of sub-divisions of each segment
+kptbounds2  0    0    0                                                         # bounds of band structure segments. Gamma point
+            1/2  0    1/2                                                       # X point
+            1/2  1/4  3/4                                                       # W point
+            1/2  1/2  1/2                                                       # L point
+            0    0    0                                                         # Gamma point
+            3/8  3/8  3/4                                                       # K point
+            1/2  0    1/2                                                       # X point
+tolwfr2  1.0d-12                                                                # convergence criterion: tolerance on wavefunction squared residual
+enunit2  1                                                                      # output energies in eV instead of Ha

@@ -1,0 +1,75 @@
+################################################################################
+# PREAMBLE
+################################################################################
+outdata_prefix "./outdata/rlx"                                                    # path prefix for output data files
+
+################################################################################
+# UNIT CELL RELAXATION PROCEDURE
+################################################################################
+optcell 1                                                                       # optimization type;
+                                                                                # 1: optimize only volume,
+                                                                                # 2: full optimization of cell geometry
+                                                                                # (see https://docs.abinit.org/variables/rlx/#optcell)
+ionmov  2                                                                       # algorithm to change displacement of atoms;
+                                                                                # 0: fixed,
+                                                                                # 1: molecular dynamics with viscous damping,
+                                                                                # 2: Broyden-Fletcher-Goldfarb-Shanno minimization (BFGS)
+                                                                                # (see https://docs.abinit.org/variables/rlx/#ionmov)
+ntime  10                                                                       # maximum number of relaxation steps
+dilatmx 1.05                                                                    # maximum allowed dilatation of unit cell
+                                                                                # needed to book additional memory:
+                                                                                # increasing lattice size decreases reciprocal primitive vectors lengths,
+                                                                                # which lead to more plane waves at constant energy cut-off
+                                                                                # (see https://docs.abinit.org/variables/rlx/#dilatmx)
+ecutsm  0.5                                                                     # [Ha] smearing needed to remove "numerical" discontinuities
+                                                                                # introduced by change of number of plane waves
+                                                                                # when unit cell size changes
+                                                                                # (see https://journals.aps.org/prb/abstract/10.1103/PhysRevB.93.205147)
+
+################################################################################
+# UNIT CELL
+################################################################################
+acell 10.18 10.18 10.18                                                         # [Bohr] length scales by which dimensionless primitive translations 'rprim' are multiplied
+rprim  0.0  0.5  0.5                                                            # dimensionless primitive translations in real space
+       0.5  0.0  0.5
+       0.5  0.5  0.0
+
+################################################################################
+# ATOM TYPES
+################################################################################
+ntypat 1                                                                        # number of atom types
+znucl 14                                                                        # atomic number of the atom types (space-separated)
+pp_dirpath "../../../pseudos/pseudo-dojo_nc_sr_pbe_standard"                    # path to directory containing pseudopotentials (must be consistent with 'znucl' order)
+pseudos "Si.psp8"                                                               # pseudopotential file names (within quotation marks, comma-separated)
+
+################################################################################
+# ATOMS
+################################################################################
+natom 2                                                                         # number of atoms in the unit cell
+typat 1 1                                                                       # atom types (must be consistent with 'znucl' and 'pseudos' order)
+xred 0   0   0                                                                  # atom fractional coordinates within unit cell
+     1/4 1/4 1/4
+
+################################################################################
+# PLANE-WAVE BASIS SET
+################################################################################
+ecut 12.0                                                                       # [Ha] cut-off energy; converge study in next "experiment" (see http://www.pseudo-dojo.org/)
+
+################################################################################
+# k-POINT GRID (see https://journals.aps.org/prb/abstract/10.1103/PhysRevB.13.5188)
+################################################################################
+kptopt 1                                                                        # method to set-up k-points; 1: symmetry accounted for, so that only k-points within irreducible BZ generated, with appropriate symmetry-defined weights (degeneracy); prevents redundancy
+ngkpt 4 4 4                                                                     # number of grid points
+nshiftk 4                                                                       # number of shifted grids to be used concurrently with the one defined above
+shiftk 0.5 0.5 0.5                                                              # k-grid shift vectors; this combination is very efficient for FCC lattice, while other choices might be more suitable for other lattices (see https://docs.abinit.org/variables/basic/#shiftk)
+       0.5 0.0 0.0
+       0.0 0.5 0.0
+       0.0 0.0 0.5
+
+################################################################################
+# SCF PROCEDURE
+################################################################################
+nstep 10                                                                        # max. number of SCF cycles
+toldfe 1.0d-6                                                                   # convergence criterion: absolute energy difference between two consecutive steps
+getwfk -1                                                                       # initial wavefunction guess taken from previous dataset; this speeds up calculation significantly
+diemac 12                                                                       # (optional) pre-conditioning of macroscopic dielectric constant; very large for metals; might significantly speed up computation (see https://docs.abinit.org/variables/gstate/#diemac)

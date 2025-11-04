@@ -1,4 +1,5 @@
 import re
+import matplotlib.pyplot as plt
 import sys
 
 
@@ -58,17 +59,13 @@ if __name__ == "__main__":
     kpts, bands = parse_abinit_eigs(infile)
 
     print(f"Parsed {len(kpts)} k-points and {len(bands)} bands.")
-    # Example: quick plot (optional)
-    try:
-        import matplotlib.pyplot as plt
 
-        x = range(1, len(kpts) + 1)  # simple x-axis: k-point index
-        for b in bands:
-            plt.plot(x, b, linewidth=1)
-        plt.xlabel("k-point index")
-        plt.ylabel("Energy (eV)")
-        plt.ylim(10, 22)
-        plt.tight_layout()
-        plt.show()
-    except Exception as e:
-        print("Plotting skipped (matplotlib not available).")
+    x = range(1, len(kpts) + 1)  # simple x-axis: k-point index
+    for b in bands:
+        plt.plot(x, b, linewidth=1)
+    plt.xlabel("k-point index")
+    plt.ylabel("Energy (eV)")
+    # Fermi energy 14.594571219345292 should be 5.32 eV...
+    plt.ylim(10, 18)
+    plt.tight_layout()
+    plt.show()

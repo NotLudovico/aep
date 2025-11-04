@@ -1,0 +1,104 @@
+################################################################################
+# PREAMBLE
+################################################################################
+outdata_prefix "./outdata/electrons"
+ndtset 3                                                                        # number of datasets (1: SCF cycle to get GS electron density; 2: band structure calculation; 3: density-of-states and Fermi surface)
+
+################################################################################
+# SPIN-ORBIT-COUPLING (SOC)
+################################################################################
+nspinor 2                                                                       # number of spinorial components of the wavefunctions
+                                                                                # (see https://docs.abinit.org/variables/gstate/#nspinor)
+
+################################################################################
+# UNIT CELL
+################################################################################
+acell 6.0 6.0 6.0                                                               # [Bohr] length scales by which dimensionless primitive translations 'rprim' are multiplied
+rprim -0.5  0.5  0.5                                                            # dimensionless primitive translations in real space
+       0.5 -0.5  0.5
+       0.5  0.5 -0.5
+
+################################################################################
+# ATOM TYPES
+################################################################################
+ntypat 1                                                                        # number of atom types
+znucl 74                                                                        # atomic number of the atom types (space-separated)
+pp_dirpath "../../../pseudos/pseudo-dojo_nc_fr_pbe_standard"                    # (IMPORTANT!!!) Use the Full-Relativistic (FR) version of the pseudopotentials at Pseudo-Dojo; path to directory containing pseudopotentials (must be consistent with 'znucl' order)
+pseudos "W.psp8"                                                                # pseudopotential file names (within quotation marks, comma-separated)
+
+################################################################################
+# ATOMS
+################################################################################
+natom 1                                                                         # W has BCC structure, with one atom per unit cell
+typat 1                                                                         # atom types (must be consistent with 'znucl' and 'pseudos' order)
+xred 0.0 0.0 0.0                                                                # atom fractional coordinates within unit cell
+
+################################################################################
+# PLANE-WAVE BASIS SET
+################################################################################
+ecut 37.0                                                                       # [Ha] cut-off energy; value recommended at http://www.pseudo-dojo.org/
+
+################################################################################
+# k-POINT GRID for GS electron density (dataset 1)
+################################################################################
+kptopt1 1                                                                       # method to set-up k-points; 1: symmetry accounted for, so that only k-points within irreducible BZ generated, with appropriate symmetry-defined weights (degeneracy); prevents redundancy
+ngkpt1 4 4 4                                                                    # number of grid points
+nshiftk1 2                                                                      # number of shifted grids to be used concurrently with the one defined above
+shiftk1  0.25  0.25  0.25                                                       # k-grid shift vectors; this combination is very efficient for BCC lattice, while other choices might be more suitable for other lattices (see https://docs.abinit.org/variables/basic/#shiftk)
+        -0.25 -0.25 -0.25
+
+################################################################################
+# OCCUPATION
+################################################################################
+occopt 4                                                                        # controls how occupation of electronic states is handled (see https://docs.abinit.org/variables/basic/#occopt)
+                                                                                # when occopt = 4, the "cold smearing" of Marzari is used
+                                                                                # smearing improves convergence w.r.t. to BZ sampling in metals, where state occupation drops suddenly to zero as Fermi level crossed
+                                                                                # otherwise, a very fine mesh would be needed for accurate integration around the discontinuity
+tsmear 0.01                                                                     # [Ha] "temperature" of smearing
+                                                                                # convergence should be checked also w.r.t. this parameter; for this example, default value used
+                                                                                # see http://theossrv1.epfl.ch/Main/ElectronicTemperature
+
+################################################################################
+# SCF PROCEDURE
+################################################################################
+nstep1 20                                                                       # max. number of SCF cycles
+toldfe1 1.0d-6                                                                  # convergence criterion: absolute energy difference between two consecutive steps
+diemac1 1e6                                                                     # (optional) pre-conditioning of macroscopic dielectric constant; very large for metals; might significantly speed up computation (see https://docs.abinit.org/variables/gstate/#diemac)
+prtden1 1                                                                       # save density from SCF procedure (dataset1), so that it can be used in the non-self-consistent calculation of band structure (dataset 2) and DOS/Fermi surface (dataset 3)
+
+################################################################################
+# BAND STRUCTURE (DATASET 2)
+################################################################################
+iscf2 -2                                                                        # self-consistency of the calculation; 0: SCF cycle, -2: non-SCF calculation (we are reading the electron density from the previous SCF cycle)
+getden2 -1                                                                      # get density from previous step
+kptopt2 -7                                                                      # when negative, the k-points are set up by specify bounds and number of sub-divisions of segments in BZ; the absolute value must be equal to the number of segments used
+nband2 32                                                                       # (IMPORTANT!!! - should be doubled for SOC calculations, to account for spin-up and down) number of bands (if unsure, look at 'nband' in output file of SCF cycle and add some more)
+ndivsm2 10                                                                      # number of sub-divisions of each band structure segment
+kptbounds2  0    0    0                                                         # bounds of band structure segments. Gamma point
+            1/2 -1/2  1/2                                                       # H point
+            0    0    1/2                                                       # N point
+            0    0    0                                                         # Gamma point
+            1/4  1/4  1/4                                                       # P point
+            1/2 -1/2  1/2                                                       # H point
+            1/4  1/4  1/4                                                       # P point
+            0    0    1/2                                                       # N point
+tolwfr2  1.0d-12                                                                # tolerance on wavefunction squared residual
+enunit2  1                                                                      # output energies in eV instead of Ha
+
+################################################################################
+# DENSITY-OF-STATES AND FERMI SURFACE (DATASET 3)
+################################################################################
+kptopt3 1                                                                       # method to set-up k-points; 1: symmetry accounted for, so that only k-points within irreducible BZ generated, with appropriate symmetry-defined weights (degeneracy); prevents redundancy
+ngkpt3 30 30 30                                                                 # number of grid points for DOS calculation (dataset 3);
+nshiftk3 1                                                                      # many more points needed to have a fine sampling of BZ;
+shiftk3 0.0 0.0 0.0
+iscf3 -3                                                                        # self-consistency of the calculation;
+                                                                                # 0: SCF cycle,
+                                                                                # -2: non-SCF calculation (we are reading the electron density from the previous SCF cycle);
+                                                                                # -3: like -2, but initialize occupation (see https://docs.abinit.org/variables/basic/#iscf)
+getden3 -2                                                                      # get density from previous step
+tolwfr3 1.0d-12                                                                 # tolerance on wavefunction squared residual
+nband3 32                                                                       # (IMPORTANT!!! - should be doubled for SOC calculations, to account for spin-up and down) number of bands (if unsure, look at 'nband' in output file of SCF cycle and add some more)
+enunit3 1                                                                       # output energies in eV instead of Ha
+prtdos3 5                                                                       # save density-of-states (spin-resolved)
+prtfsurf3 1                                                                     # save data for Fermi surface plot in BXSF format (readable by XCrysDen)
