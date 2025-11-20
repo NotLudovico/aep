@@ -1,0 +1,76 @@
+################################################################################
+# PREAMBLE
+################################################################################
+outdata_prefix "./outdata/etot-vs-nkpt-tsmear"    # path prefix for output data files
+
+# DOUBLE CONVERGENCE LOOP SETUP
+ndtset 45                  # Total number of datasets (3 grids * 5 smearings)
+udtset 5 9                 # 5 values of 'ngkpt' and 9 values of 'tsmear'
+
+################################################################################
+# UNIT CELL (Niobium - BCC)
+################################################################################
+acell 6.23 6.23 6.23       # [Bohr] Lattice constant (approx 3.30 Angstroms for Nb)
+rprim -0.5  0.5  0.5       # BCC Primitive vectors
+       0.5 -0.5  0.5
+       0.5  0.5 -0.5
+
+################################################################################
+# ATOM TYPES
+################################################################################
+ntypat 1                   # Number of atom types
+znucl 41                   # Atomic number for Niobium (Nb)
+pp_dirpath "../"           # Directory containing your pseudopotentials
+pseudos "Nb.psp8"          # Ensure you have the Niobium pseudopotential
+
+################################################################################
+# ATOMS
+################################################################################
+natom 1                    # Nb BCC has 1 atom per primitive cell
+typat 1
+xred 0.0 0.0 0.0           # Atom at the origin
+
+################################################################################
+# PLANE-WAVE BASIS SET
+################################################################################
+ecut 44                    # [Ha] Set this to YOUR converged value from the previous step
+                           # (Nb generally requires higher ecut than Al, e.g., 30-50 Ha)
+
+################################################################################
+# k-POINT GRID (Convergence Parameter 1)
+################################################################################
+kptopt 1                   # Use symmetry to generate k-points in Irreducible BZ
+
+# We define 3 different grids to test (referenced by udtset dimension 1)
+ngkpt1? 8  8  8
+ngkpt2? 10 10 10
+ngkpt3? 12 12 12
+ngkpt4? 14 14 14
+ngkpt5? 16 16 16
+
+nshiftk 1                  # For BCC, 1 shift is usually sufficient
+shiftk  0.5 0.5 0.5        # Symmetric shift efficient for BCC sampling
+
+################################################################################
+# OCCUPATION & SMEARING (Convergence Parameter 2)
+################################################################################
+occopt 4                   # Marzari-Vanderbilt "cold smearing" (Recommended for metals)
+
+# We define 5 smearing temperatures to test (referenced by udtset dimension 2)
+tsmear?1 0.01
+tsmear?2 0.015
+tsmear?3 0.02
+tsmear?4 0.025
+tsmear?5 0.03
+tsmear?6 0.035
+tsmear?7 0.04
+tsmear?8 0.045
+tsmear?9 0.05
+
+################################################################################
+# SCF PROCEDURE
+################################################################################
+nstep 50                   # Max SCF cycles (Metals can be slow to converge)
+toldfe 1.0d-8              # Energy convergence tolerance (tightened for accuracy)
+diemac 1.0e6               # Large dielectric preconditioner for metals
+getwfk -1                  # Use wavefunction from previous dataset to speed up

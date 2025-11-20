@@ -1,0 +1,72 @@
+################################################################################
+# PREAMBLE
+################################################################################
+outdata_prefix "./outdata/Nb-etot-vs-ecut"        # Path prefix for output data files
+ndtset 14                                          # Number of datasets (one for each ecut)
+
+################################################################################
+# UNIT CELL
+################################################################################
+# Niobium is Body-Centered Cubic (BCC). 
+# Experimental lattice constant a ~ 3.30 Angstrom = 6.236 Bohr.
+acell 6.24 6.24 6.24                              # [Bohr] Lattice scale
+
+# Primitive vectors for BCC lattice (distinct from FCC)
+rprim -0.5  0.5  0.5
+       0.5 -0.5  0.5
+       0.5  0.5 -0.5
+
+################################################################################
+# ATOM TYPES
+################################################################################
+ntypat 1                                          # Number of atom types
+znucl 41                                          # Atomic number for Niobium
+pp_dirpath "../"
+pseudos "Nb.psp8"                                 # Pseudopotential file for Nb
+
+################################################################################
+# ATOMS
+################################################################################
+natom 1                                           # 1 atom per primitive cell for BCC
+typat 1                                           # Atom type index
+xred 0.0 0.0 0.0                                  # Fractional coordinates (origin)
+
+################################################################################
+# PLANE-WAVE BASIS SET
+################################################################################
+# Convergence test for cutoff energy. 
+# Transition metals often need higher cutoffs than Al (e.g., 20-45 Ha).
+ecut1 28
+ecut2 30
+ecut3 32
+ecut4 34
+ecut5 36
+ecut6 38
+ecut7 40
+ecut8 42
+ecut9 44
+ecut10 46
+ecut11 48
+ecut12 50
+ecut13 52
+ecut14 54
+################################################################################
+# k-POINT GRID
+################################################################################
+kptopt 1                                          # 1: Generate k-points in irreducible BZ
+ngkpt 8 8 8                                       # A fixed, moderately dense grid for this test
+nshiftk 1                                         # Single grid shift is standard for BCC
+shiftk 0.5 0.5 0.5                                # Symmetric shift to improve convergence
+
+################################################################################
+# OCCUPATION
+################################################################################
+occopt 4                                          # Cold smearing (Marzari)
+tsmear 0.04                                       # [Ha] Smearing temperature (approx 1000K)
+
+################################################################################
+# SCF PROCEDURE
+################################################################################
+nstep 50                                          # Max SCF cycles (Metals can be sloshy)
+toldfe 1.0d-6                                     # Energy difference tolerance
+diemac 1.0e6                                      # High dielectric preconditioning for metals
