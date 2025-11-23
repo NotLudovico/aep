@@ -10,9 +10,11 @@ def _():
     import matplotlib.pyplot as plt
     import numpy as np
     import pandas as pd
+    import abipy.data as abidata
+    from abipy.abilab import abiopen
 
     plt.style.use("default")
-    return mo, np, pd, plt
+    return abiopen, mo, np, pd, plt
 
 
 @app.cell(hide_code=True)
@@ -23,7 +25,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(np):
     # ==========================================
     # 1. DATA SETUP
@@ -110,7 +112,7 @@ def _(ecut, etot, mo, np, plt, tolerance):
 
     plt.tight_layout()
 
-    plt.savefig("convergence_plot.png", dpi=300, bbox_inches="tight")
+    plt.savefig("images/convergence_plot.png", dpi=300, bbox_inches="tight")
 
     mo.center(plt.gca())
     return
@@ -213,8 +215,43 @@ def _(mo, ngkpt_tsmear, plt):
 
     plt.legend()
 
-    plt.savefig("tsmear-ngkpt.png", dpi=300, bbox_inches="tight")
+    plt.savefig("images/tsmear-ngkpt.png", dpi=300, bbox_inches="tight")
 
+    mo.center(plt.gca())
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    # Electronic Density of States
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(abiopen, mo, np, plt):
+    with abiopen("edos/outdata/nb_dos_DS2_GSR.nc") as gs_wfk:
+        gs_ebands = gs_wfk.ebands
+
+    edos = gs_ebands.get_edos(method="gaussian", step=0.01, width=0.1)
+    edos_fig = edos.plot_dos_idos(
+        title="DOS and Integrated DOS", xlims=(-5, 10), show=False
+    )
+
+    ax_idos, ax_dos = edos_fig.get_axes()[:2]
+    ax_dos.set_ylim(0, 3)
+    ax_idos.set_ylim(7, 22)
+
+
+    energy, idos = ax_idos.lines[0].get_data()
+    _, dos = ax_dos.lines[0].get_data()
+    fermi_energy_idx = np.where(energy == min(energy, key=abs))[0][0]
+    print("IDOS at Fermy Energy: ", idos[fermi_energy_idx])
+    print("DOS at Fermy Energy: ", dos[fermi_energy_idx])
+
+
+    plt.savefig("images/edos.png", dpi=300, bbox_inches="tight")
     mo.center(plt.gca())
     return
 
