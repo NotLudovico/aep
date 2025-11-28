@@ -52,7 +52,7 @@ getden2 -1
 
 # --- CORRECTION HERE ---
 kptopt2 1
-ngkpt2 20 20 20
+ngkpt2 30 30 30
 nshiftk2 1
 shiftk2 0.0 0.0 0.0         # STRICTLY REQUIRED for prtfsurf
 

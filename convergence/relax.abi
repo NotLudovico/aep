@@ -1,24 +1,24 @@
 ################################################################################
 # PREAMBLE
 ################################################################################
-outdata_prefix "./outdata/Nb_rlx"    # Prefix for output files
+outdata_prefix "./outdata/Nb_rlx"
 
 ################################################################################
 # UNIT CELL RELAXATION PROCEDURE
 ################################################################################
-optcell 2          # Optimize cell geometry (volume and shape).
-ionmov  2          # BFGS minimization algorithm for ions.
-ntime   20         # Max number of relaxation steps.
-dilatmx 1.01
-ecutsm  0.5        # Smearing for plane-wave kinetic energy to smooth forces.
+optcell 1           # Optimize volume only (maintain cubic symmetry for now) [cite: 1794]
+ionmov  2           # BFGS algorithm for ion movement [cite: 1796]
+ntime   20          # Increased slightly to allow convergence
+dilatmx 1.10
+ecutsm  0.5         # Smearing of kinetic energy for smooth relaxation [cite: 1800]
 
 ################################################################################
 # UNIT CELL (Niobium - BCC)
 ################################################################################
-# Experimental Lattice Constant a ~ 3.30 Angstroms approx 6.24 Bohr.
+# Starting guess: 3.30 Angstroms ~ 6.24 Bohr
 acell 6.24 6.24 6.24 
 
-# Dimensionless primitive vectors for BCC structure.
+# Primitive vectors for BCC lattice
 rprim -0.5  0.5  0.5
        0.5 -0.5  0.5
        0.5  0.5 -0.5
@@ -26,42 +26,40 @@ rprim -0.5  0.5  0.5
 ################################################################################
 # ATOM TYPES
 ################################################################################
-ntypat 1           # Number of atom types.
-znucl 41           # Atomic number for Niobium (Nb). 
-
-# Ensure you have the correct Nb pseudopotential in this path.
-pp_dirpath "../"
+ntypat 1            # Number of atom types
+znucl 41            # Atomic number for Niobium (Nb)
+pp_dirpath "../"    # Path as requested
 pseudos "Nb.psp8" 
 
 ################################################################################
 # ATOMS
 ################################################################################
-natom 1            # 1 atom per primitive cell for BCC.
-typat 1            # Type of atom 1.
-xred  0.0 0.0 0.0  # Fractional coordinates (origin).
+natom 1             # 1 atom per primitive cell
+xred  0.0 0.0 0.0   # Fractional coordinates
 
 ################################################################################
 # PLANE-WAVE BASIS SET
 ################################################################################
-ecut 44.0
+ecut 44.0           # Cut-off energy as requested
 
 ################################################################################
 # k-POINT GRID
 ################################################################################
-kptopt 1
-ngkpt  14 14 14
-
-nshiftk 1
-shiftk  0.5 0.5 0.5
+kptopt 1            # Symmetry accounted for (Irreducible BZ) [cite: 1810]
+ngkpt  14 14 14     # Dense grid for transition metal
+nshiftk 1           # Standard symmetric shift for BCC (Contains Gamma)
+shiftk  0.5 0.5 0.5 
 
 ################################################################################
 # OCCUPATION (Smearing)
 ################################################################################
-occopt 4           # Cold smearing (Marzari).
-tsmear 0.001       # Smearing temperature [Ha]. 
+occopt 4            # Cold smearing of Marzari [cite: 1816]
+tsmear 0.015        # Smearing temperature as requested
 
 ################################################################################
 # SCF PROCEDURE
 ################################################################################
-nstep 75           # Max SCF cycles (increased for d-electron convergence).
-toldfe 1.0d-7      # Energy tolerance (tighter for relaxation forces).
+nstep 50            # Critical: Increased to ensure electronic convergence before moving atoms [cite: 1821]
+toldfe 1.0d-8       # Tightened tolerance for accurate forces
+diemac 1e6          # Pre-conditioning for metals [cite: 1824]
+getwfk -1           # Speed up by reading previous wavefunction [cite: 1825]

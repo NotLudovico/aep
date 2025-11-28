@@ -57,15 +57,15 @@ shiftk  0.5 0.5 0.5        # Symmetric shift efficient for BCC sampling
 occopt 4                   # Marzari-Vanderbilt "cold smearing" (Recommended for metals)
 
 # We define 5 smearing temperatures to test (referenced by udtset dimension 2)
-tsmear?1 0.01
-tsmear?2 0.015
-tsmear?3 0.02
-tsmear?4 0.025
-tsmear?5 0.03
-tsmear?6 0.035
-tsmear?7 0.04
-tsmear?8 0.045
-tsmear?9 0.05
+tsmear?1 0.001
+tsmear?2 0.002
+tsmear?3 0.003
+tsmear?4 0.004
+tsmear?5 0.005
+tsmear?6 0.006
+tsmear?7 0.007
+tsmear?8 0.008
+tsmear?9 0.009
 
 ################################################################################
 # SCF PROCEDURE

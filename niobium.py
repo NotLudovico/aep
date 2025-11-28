@@ -130,28 +130,38 @@ def _(mo):
 def _(pd):
     ngkpt_tsmear = pd.DataFrame(
         data={
-            "tsmear": [0.01, 0.015, 0.02, 0.025, 0.03, 0.035, 0.04, 0.045, 0.05],
+            "tsmear": [
+                0.001,
+                0.002,
+                0.003,
+                0.004,
+                0.005,
+                0.006,
+                0.007,
+                0.008,
+                0.009,
+            ],
             "8x8x8": [
-                -6.2284830096e01,
-                -6.2284963624e01,
-                -6.2285186934e01,
-                -6.2285370002e01,
-                -6.2285455302e01,
-                -6.2285445372e01,
-                -6.2285370038e01,
-                -6.2285254528e01,
-                -6.2285111286e01,
+                -6.2284869142e01,
+                -6.2284871193e01,
+                -6.2284876848e01,
+                -6.2284889393e01,
+                -6.2284893498e01,
+                -6.2284880454e01,
+                -6.2284858683e01,
+                -6.2284839641e01,
+                -6.2284829472e01,
             ],
             "10x10x10": [
-                -6.2286442971e01,
-                -6.2286260635e01,
-                -6.2286165833e01,
-                -6.2286093679e01,
-                -6.2285977804e01,
-                -6.2285809116e01,
-                -6.2285608912e01,
-                -6.2285396520e01,
-                -6.2285180839e01,
+                -6.2285539305e01,
+                -6.2285546612e01,
+                -6.2285548290e01,
+                -6.2285541520e01,
+                -6.2285535620e01,
+                -6.2285533906e01,
+                -6.2285535933e01,
+                -6.2285540830e01,
+                -6.2285548253e01,
             ],
             "12x12x12": [
                 -6.2285558268e01,
@@ -165,26 +175,26 @@ def _(pd):
                 -6.2285155925e01,
             ],
             "14x14x14": [
-                -6.2285984637e01,
-                -6.2285889675e01,
-                -6.2285880363e01,
-                -6.2285881235e01,
-                -6.2285827066e01,
-                -6.2285706424e01,
-                -6.2285542831e01,
-                -6.2285358278e01,
-                -6.2285162884e01,
+                -6.2286107148e01,
+                -6.2286117506e01,
+                -6.2286131617e01,
+                -6.2286139930e01,
+                -6.2286133895e01,
+                -6.2286112872e01,
+                -6.2286082697e01,
+                -6.2286049123e01,
+                -6.2286015724e01,
             ],
             "16x16x16": [
-                -6.2285852410e01,
-                -6.2285843679e01,
-                -6.2285860351e01,
-                -6.2285863096e01,
-                -6.2285809393e01,
-                -6.2285693931e01,
-                -6.2285536360e01,
-                -6.2285355757e01,
-                -6.2285161598e01,
+                -6.2285898400e01,
+                -6.2285898168e01,
+                -6.2285897083e01,
+                -6.2285895584e01,
+                -6.2285890862e01,
+                -6.2285882753e01,
+                -6.2285873620e01,
+                -6.2285865220e01,
+                -6.2285858133e01,
             ],
         }
     )
@@ -195,7 +205,7 @@ def _(pd):
 
 @app.cell(hide_code=True)
 def _(mo, ngkpt_tsmear, plt):
-    cols = ["8x8x8","10x10x10", "12x12x12", "14x14x14", "16x16x16"]
+    cols = ["8x8x8", "10x10x10", "12x12x12", "14x14x14", "16x16x16"]
     global_min = ngkpt_tsmear[cols].min().min()
 
     plt.figure(figsize=(10, 6))
@@ -205,7 +215,7 @@ def _(mo, ngkpt_tsmear, plt):
             ngkpt_tsmear[col],
             marker="o",
             linewidth=2,
-            label=col
+            label=col,
         )
 
     plt.title("Nb Convergence: Smearing vs k-points")
@@ -236,7 +246,7 @@ def _(abiopen, mo, np, plt):
 
     edos = gs_ebands.get_edos(method="gaussian", step=0.01, width=0.1)
     edos_fig = edos.plot_dos_idos(
-        title="DOS and Integrated DOS", xlims=(-5, 10), show=False
+        title="DOS and Integrated DOS", xlims=(-6, 10), show=False
     )
 
     ax_idos, ax_dos = edos_fig.get_axes()[:2]
@@ -253,6 +263,54 @@ def _(abiopen, mo, np, plt):
 
     plt.savefig("images/edos.png", dpi=300, bbox_inches="tight")
     mo.center(plt.gca())
+    return energy, idos
+
+
+@app.cell(hide_code=True)
+def _(energy, idos):
+    # define your energy range
+    e_min = -6  # Lower bound in eV
+    e_max = 0  # Upper bound in eV
+
+    # create a boolean mask for indices where energy is within [e_min, e_max]
+    mask = (energy >= e_min) & (energy <= e_max)
+
+    # apply the mask to slice the arrays
+    energy_subset = energy[mask]
+    idos_subset = idos[mask]
+
+    print(f"--- Data in range [{e_min}, {e_max}] eV ---")
+    print(f"Start IDOS ({energy_subset[0]:.2f} eV): {idos_subset[0]:.4f}")
+    print(f"End IDOS   ({energy_subset[-1]:.2f} eV): {idos_subset[-1]:.4f}")
+
+    states_in_window = idos_subset[-1] - idos_subset[0]
+    print(f"Total states integrated within window: {states_in_window:.4f}")
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    # Phonons
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(abiopen, mo, plt):
+    with abiopen("phonons/outdata/3_anaddb/anaddb_PHBST.nc") as nc_bands:
+        ph_bands = nc_bands.phbands
+
+    with abiopen("phonons/outdata/3_anaddb/anaddb_PHDOS.nc") as nc_dos:
+        ph_dos = nc_dos.phdos
+
+    ph_fig = ph_bands.plot_with_phdos(
+        ph_dos, units="cm-1", title="Phonon Bands + DOS", show=False
+    )
+
+    plt.savefig("images/ph_bands_dos.png", dpi=300, bbox_inches="tight")
+
+    mo.center(ph_fig)
     return
 
 
